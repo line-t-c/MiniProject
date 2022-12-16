@@ -1,15 +1,23 @@
 package org.example;
 
-public class Main {
-    public static void main(String[] args) {
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
 
-        System.out.println("Hello");
-        System.out.println("world!");
-        System.out.println("world!");
-        System.out.println("world!");
-        System.out.println("world!");
-        System.out.println("world!");
-        System.out.println("hey");
-        System.out.println("bl.a. bl.a. bl.a. bl.a.");
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+
+        DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
+        Terminal terminal = terminalFactory.createTerminal();
+//        terminal.setCursorVisible(false); //Så kan man ikke se pilen
+
+        System.out.println("IDEAS");
+        System.out.println("Bilspil");
+
+
+
     }
 }
