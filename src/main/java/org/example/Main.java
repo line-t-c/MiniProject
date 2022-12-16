@@ -14,6 +14,10 @@ public class Main {
         Terminal terminal = terminalFactory.createTerminal();
 //        terminal.setCursorVisible(false); //Så kan man ikke se pilen
 
+        final char car = 'X';
+        final char block = '\u2588';
+        final char point = '*';
+
         System.out.println("IDEAS");
         System.out.println("Bilspil");
 
