@@ -22,11 +22,11 @@ public class Main {
         terminal.setCursorVisible(false);
 
 //        Importerer random, så vi kan sætte random forhindringer
-        Random r = new Random();
 
-        final char obstacle = '☢';
+        final char obstacle = '\u25b2';
         final char walls = '\u2590';
         final char points = '\u26ab';
+        final char playerChar = '\u2588';
         int pointsTotal = 0;
 
         List<FallingObjects> pointsList = new ArrayList<>();
@@ -38,11 +38,15 @@ public class Main {
 //        Print text on right and left side
         printSides(terminal);
 
-//        Place player before start
-        Player player = new Player(40, 22, '☃');
+//        Player, større
+
+        Player player = new Player(40, 20, playerChar);
+//        Player playerUp = new Player(40, 19, playerChar);
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
-        terminal.setForegroundColor(TextColor.ANSI.CYAN); //Fucker lidt op i farven
+        terminal.setForegroundColor(TextColor.ANSI.RED);
+//        terminal.setCursorPosition(playerUp.getX(), playerUp.getY());
+//        terminal.putCharacter(playerUp.getSymbol());
 
         terminal.flush();
 
@@ -64,48 +68,82 @@ public class Main {
             System.out.println(type);
             System.out.println(c);
 
-//            Sætte op, hvad der sker, når man trykker på tasterne, så den ikke kan rykke ind i væggen og top/bund
-
             switch (type) {
                 case ArrowUp -> {
                     if (player.getY() != 0) {
                         player.moveUp();
+//                        playerUp.moveUp();
+                        terminal.setForegroundColor(TextColor.ANSI.RED);
                     }
                 }
                 case ArrowDown -> {
-                    if (player.getY() != 23) {
+                    if (player.getY() != 24) {
                         player.moveDown();
+//                        playerUp.moveDown();
+                        terminal.setForegroundColor(TextColor.ANSI.RED);
                     }
                 }
                 case ArrowRight -> {
                     if (player.getX() != 59) {
+//                        playerUp.moveRight();
                         player.moveRight();
+                        terminal.setForegroundColor(TextColor.ANSI.RED);
                     }
                 }
                 case ArrowLeft -> {
                     if (player.getX() != 21) {
                         player.moveLeft();
+//                        playerUp.moveLeft();
+                        terminal.setForegroundColor(TextColor.ANSI.RED);
                     }
                 }
+
             }
 
-//            Sætte at player rykker sig, men ikke har en hale efter sig
+//            Sætte at playerChar rykker sig, men ikke har en hale efter sig
             terminal.setCursorPosition(player.getX(), player.getY());
             terminal.putCharacter(player.getSymbol());
+
             terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
             terminal.putCharacter(' ');
 
-            terminal.flush();
+//            terminal.setCursorPosition(player.getX(), player.getY() + 1);
+//            terminal.putCharacter(player.getSymbol());
+//            terminal.setForegroundColor(TextColor.ANSI.RED);
+
+//            switch (type) {
+//                case ArrowUp -> {
+//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
+//                    terminal.putCharacter(playerChar);
+//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
+//                    terminal.putCharacter(' ');
+//                }
+//                case ArrowDown -> {
+//                    terminal.setCursorPosition(playerUp.getPreviousX(), playerUp.getGetPreviousY());
+//                    terminal.putCharacter(' ');
+//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
+//                    terminal.putCharacter(playerChar);
+//                }
+//                case ArrowRight, ArrowLeft -> {
+//                    terminal.setCursorPosition(playerUp.getPreviousX(), playerUp.getGetPreviousY());
+//                    terminal.putCharacter(' ');
+//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
+//                    terminal.putCharacter(' ');
+//                }
+//            }
+
+
 
 //        Add falling points and obstacles
 
-            falls(terminal, points, pointsList, 0.2, TextColor.ANSI.YELLOW);
-            falls(terminal, obstacle, obstacleList,0.3, TextColor.ANSI.GREEN);
-
-            terminal.flush();
+            falls(terminal, points, pointsList, 0.3, TextColor.ANSI.YELLOW);
+            falls(terminal, obstacle, obstacleList,0.2, TextColor.ANSI.GREEN);
+//            fallObstacle(terminal, 'X', obstacleList, 0.1, TextColor.ANSI.CYAN);
 
             ifHitsPoints(pointsList,terminal,player,pointsTotal);
-            ifHitsObstacle(obstacleList,terminal, player);
+//            ifHitsPoints(pointsList,terminal,playerUp,pointsTotal);
+            ifHitsObstacle(obstacleList,terminal, player, true, pointsTotal);
+//            ifHitsObstacle(obstacleList,terminal, playerUp, true, pointsTotal);
 
             terminal.flush();
 
@@ -132,6 +170,15 @@ public class Main {
         for (int column = 0; column <= 24; column++) {
             terminal.setCursorPosition(60, column);
             terminal.putCharacter(walls);
+        }
+        for (int column = 0; column <= 24; column++) {
+            terminal.setCursorPosition(28, column);
+            terminal.putCharacter('\u2584');
+        }
+
+        for (int column = 0; column <= 24; column++) {
+            terminal.setCursorPosition((60-8), column);
+            terminal.putCharacter('\u2584');
         }
     }
 
@@ -160,16 +207,13 @@ public class Main {
             terminal.setCursorPosition(i + 65, 2);
             terminal.putCharacter(charAti[i]);
         }
-        terminal.setCursorPosition(74, 2);
-        terminal.putCharacter('0');
-        terminal.setCursorPosition(75, 2);
-        terminal.putCharacter('0');
+
     }
 
     public static void falls(Terminal terminal, char symbol, List<FallingObjects> fallList, double probability, TextColor.ANSI color) throws IOException {
         double probabliity = ThreadLocalRandom.current().nextDouble();
         if (probabliity <= probability) {
-            fallList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, symbol));
+            fallList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(29,51), 0, symbol));
         }
 
         for (FallingObjects fallingObjects : fallList) {
@@ -184,38 +228,79 @@ public class Main {
             terminal.setForegroundColor(color);
         }
     }
+    public static void fallObstacle(Terminal terminal, char symbol, List<FallingObjects> fallList, double probability, TextColor.ANSI color) throws IOException {
+        double probabliity = ThreadLocalRandom.current().nextDouble();
+        if (probabliity <= probability) {
+            fallList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(29,51), 0, symbol));
+        }
+
+        for (FallingObjects fallingObjects : fallList) {
+            fallingObjects.fall();
+            terminal.setCursorPosition(fallingObjects.getX(), fallingObjects.getY());
+            terminal.putCharacter(fallingObjects.getSymbol());
+            terminal.setForegroundColor(color);
+
+            int extraObject = 1;
+
+            Random r = new Random();
+            for (int i = 0; i < r.nextInt(1,4); i++){
+                terminal.setCursorPosition(fallingObjects.getX() + extraObject, fallingObjects.getY());
+                terminal.putCharacter(symbol);
+                terminal.setForegroundColor(color);
+                terminal.setCursorPosition(fallingObjects.getPreviousX() + extraObject, fallingObjects.getPreviousY());
+                terminal.putCharacter(' ');
+
+                extraObject += extraObject;
+            }
+        }
+    }
 
     public static void ifHitsPoints(List<FallingObjects> list, Terminal terminal, Player player, int pointsTotal) throws IOException {
 
         for (FallingObjects fallingObjects : list) {
 
             if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
-                pointsTotal++;
-                terminal.setCursorPosition(74, 2);
-                char p = (char) pointsTotal;
-                terminal.putCharacter('x');
+                pointsTotal += 1;
 
-                System.out.println("Points: " + pointsTotal);
+                String points = String.valueOf(pointsTotal);
 
+                char[] charAtk = points.toCharArray();
+                for (int i = 0; i < charAtk.length; i++) {
+                    terminal.setCursorPosition(i + 74, 2);
+                    terminal.putCharacter(charAtk[i]);
+                }
             }
         }
         System.out.println("Points: " + pointsTotal);
-
-        terminal.flush();
-
     }
 
-    public static void ifHitsObstacle(List<FallingObjects> list, Terminal terminal, Player player) throws IOException {
+    public static void ifHitsObstacle(List<FallingObjects> list, Terminal terminal, Player player, boolean continueReadingInput, int pointsTotal) throws IOException {
 
         for (FallingObjects fallingObjects : list) {
 
             if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
+                continueReadingInput = false;
                 terminal.clearScreen();
                 String gameOver = "GAME OVER ";
                 char[] charAtj = gameOver.toCharArray();
                 for (int i = 0; i < charAtj.length; i++) {
-                    terminal.setCursorPosition(i + 35, 15);
+                    terminal.setCursorPosition(i + 35, 12);
                     terminal.putCharacter(charAtj[i]);
+                }
+                String pointsText = "Points: ";
+
+                char[] charAti = pointsText.toCharArray();
+                for (int i = 0; i < charAti.length; i++) {
+                    terminal.setCursorPosition(i + 65, 2);
+                    terminal.putCharacter(charAti[i]);
+                }
+
+                String points = String.valueOf(pointsTotal);
+
+                char[] charAtk = points.toCharArray();
+                for (int i = 0; i < charAtk.length; i++) {
+                    terminal.setCursorPosition(i + 74, 2);
+                    terminal.putCharacter(charAtk[i]);
                 }
             }
         }
