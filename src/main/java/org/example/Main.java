@@ -9,8 +9,10 @@ import com.googlecode.lanterna.terminal.Terminal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
+//Kunne lave objecter af arrayList, som snake klassen
+//Så list[0]=x=1,y=1, osv... Og så fjerne de sidste i listen, eller første, i stedet for at rykke frem
 
 public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -41,12 +43,9 @@ public class Main {
 //        Player, større
 
         Player player = new Player(40, 20, playerChar);
-//        Player playerUp = new Player(40, 19, playerChar);
         terminal.setCursorPosition(player.getX(), player.getY());
-        terminal.putCharacter(player.getSymbol());
         terminal.setForegroundColor(TextColor.ANSI.RED);
-//        terminal.setCursorPosition(playerUp.getX(), playerUp.getY());
-//        terminal.putCharacter(playerUp.getSymbol());
+        terminal.putCharacter(player.getSymbol());
 
         terminal.flush();
 
@@ -68,86 +67,7 @@ public class Main {
             System.out.println(type);
             System.out.println(c);
 
-            switch (type) {
-                case ArrowUp -> {
-                    if (player.getY() != 0) {
-                        player.moveUp();
-//                        playerUp.moveUp();
-                        terminal.setForegroundColor(TextColor.ANSI.RED);
-                    }
-                }
-                case ArrowDown -> {
-                    if (player.getY() != 24) {
-                        player.moveDown();
-//                        playerUp.moveDown();
-                        terminal.setForegroundColor(TextColor.ANSI.RED);
-                    }
-                }
-                case ArrowRight -> {
-                    if (player.getX() != 59) {
-//                        playerUp.moveRight();
-                        player.moveRight();
-                        terminal.setForegroundColor(TextColor.ANSI.RED);
-                    }
-                }
-                case ArrowLeft -> {
-                    if (player.getX() != 21) {
-                        player.moveLeft();
-//                        playerUp.moveLeft();
-                        terminal.setForegroundColor(TextColor.ANSI.RED);
-                    }
-                }
-
-            }
-
-//            Sætte at playerChar rykker sig, men ikke har en hale efter sig
-            terminal.setCursorPosition(player.getX(), player.getY());
-            terminal.putCharacter(player.getSymbol());
-
-            terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
-            terminal.putCharacter(' ');
-
-//            terminal.setCursorPosition(player.getX(), player.getY() + 1);
-//            terminal.putCharacter(player.getSymbol());
-//            terminal.setForegroundColor(TextColor.ANSI.RED);
-
-//            switch (type) {
-//                case ArrowUp -> {
-//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
-//                    terminal.putCharacter(playerChar);
-//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
-//                    terminal.putCharacter(' ');
-//                }
-//                case ArrowDown -> {
-//                    terminal.setCursorPosition(playerUp.getPreviousX(), playerUp.getGetPreviousY());
-//                    terminal.putCharacter(' ');
-//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
-//                    terminal.putCharacter(playerChar);
-//                }
-//                case ArrowRight, ArrowLeft -> {
-//                    terminal.setCursorPosition(playerUp.getPreviousX(), playerUp.getGetPreviousY());
-//                    terminal.putCharacter(' ');
-//                    terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
-//                    terminal.putCharacter(' ');
-//                }
-//            }
-
-
-
-//        Add falling points and obstacles
-
-            falls(terminal, points, pointsList, 0.3, TextColor.ANSI.YELLOW);
-            falls(terminal, obstacle, obstacleList,0.2, TextColor.ANSI.GREEN);
-//            fallObstacle(terminal, 'X', obstacleList, 0.1, TextColor.ANSI.CYAN);
-
-            ifHitsPoints(pointsList,terminal,player,pointsTotal);
-//            ifHitsPoints(pointsList,terminal,playerUp,pointsTotal);
-            ifHitsObstacle(obstacleList,terminal, player, true, pointsTotal);
-//            ifHitsObstacle(obstacleList,terminal, playerUp, true, pointsTotal);
-
-            terminal.flush();
-
-//            Add quit
+            //            Add quit
 
             if (c == Character.valueOf('q')) {
                 continueReadingInput = false;
@@ -155,8 +75,51 @@ public class Main {
                 terminal.close();
             }
 
-            terminal.flush();
+            switch (type) {
+                case ArrowUp -> {
+                    if (player.getY() != 0) {
+                        player.moveUp();
+                        terminal.setForegroundColor(TextColor.ANSI.BLUE);
+                    }
+                }
+                case ArrowDown -> {
+                    if (player.getY() != 24) {
+                        player.moveDown();
+                        terminal.setForegroundColor(TextColor.ANSI.BLUE);
+                    }
+                }
+                case ArrowRight -> {
+                    if (player.getX() != 51) {
+                        player.moveRight();
+                        terminal.setForegroundColor(TextColor.ANSI.BLUE);
+                    }
+                }
+                case ArrowLeft -> {
+                    if (player.getX() != 29) {
+                        player.moveLeft();
+                        terminal.setForegroundColor(TextColor.ANSI.BLUE);
+                    }
+                }
+            }
 
+            //        Add falling points and obstacles
+
+            falls(terminal, points, pointsList, 0.3, TextColor.ANSI.WHITE);
+            falls(terminal, obstacle, obstacleList,0.2, TextColor.ANSI.RED);
+
+            ifHitsPoints(pointsList,terminal,player,pointsTotal);
+            ifHitsObstacle(obstacleList,terminal, player, true, pointsTotal);
+
+//            Sætte at playerChar rykker sig, men ikke har en hale efter sig
+
+            terminal.setCursorPosition(player.getX(), player.getY());
+            terminal.putCharacter(player.getSymbol());
+            terminal.setForegroundColor(TextColor.ANSI.BLUE);
+
+            terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
+            terminal.putCharacter(' ');
+
+            terminal.flush();
         }
     }
 
@@ -228,39 +191,14 @@ public class Main {
             terminal.setForegroundColor(color);
         }
     }
-    public static void fallObstacle(Terminal terminal, char symbol, List<FallingObjects> fallList, double probability, TextColor.ANSI color) throws IOException {
-        double probabliity = ThreadLocalRandom.current().nextDouble();
-        if (probabliity <= probability) {
-            fallList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(29,51), 0, symbol));
-        }
-
-        for (FallingObjects fallingObjects : fallList) {
-            fallingObjects.fall();
-            terminal.setCursorPosition(fallingObjects.getX(), fallingObjects.getY());
-            terminal.putCharacter(fallingObjects.getSymbol());
-            terminal.setForegroundColor(color);
-
-            int extraObject = 1;
-
-            Random r = new Random();
-            for (int i = 0; i < r.nextInt(1,4); i++){
-                terminal.setCursorPosition(fallingObjects.getX() + extraObject, fallingObjects.getY());
-                terminal.putCharacter(symbol);
-                terminal.setForegroundColor(color);
-                terminal.setCursorPosition(fallingObjects.getPreviousX() + extraObject, fallingObjects.getPreviousY());
-                terminal.putCharacter(' ');
-
-                extraObject += extraObject;
-            }
-        }
-    }
-
     public static void ifHitsPoints(List<FallingObjects> list, Terminal terminal, Player player, int pointsTotal) throws IOException {
 
-        for (FallingObjects fallingObjects : list) {
-
-            if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
-                pointsTotal += 1;
+            for (int i = 0; i < list.size(); i++) {
+                if (player.getX() == list.get(i).getX() && player.getY() == list.get(i).getY()) {
+                    list.remove(i);
+                    pointsTotal++;
+                }
+            }
 
                 String points = String.valueOf(pointsTotal);
 
@@ -269,8 +207,6 @@ public class Main {
                     terminal.setCursorPosition(i + 74, 2);
                     terminal.putCharacter(charAtk[i]);
                 }
-            }
-        }
         System.out.println("Points: " + pointsTotal);
     }
 
