@@ -1,0 +1,25 @@
+Index: src/main/java/org/example/GameObject.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/GameObject.java b/src/main/java/org/example/GameObject.java
+new file mode 100644
+--- /dev/null	(date 1671454990314)
++++ b/src/main/java/org/example/GameObject.java	(date 1671454990314)
+@@ -0,0 +1,15 @@
++package org.example;
++
++public class GameObject {
++    protected int x;
++    protected int y;
++    protected char symbol;
++    protected int previousX;
++    protected int previousY;
++
++    public GameObject (int x, int y, char symbol) {
++        this.x = x;
++        this.y = y;
++        this.symbol = symbol;
++    }
++}

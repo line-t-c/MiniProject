@@ -17,7 +17,6 @@ public class Main {
 
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         Terminal terminal = terminalFactory.createTerminal();
-
 //        Så kan man ikke se pilen
         terminal.setCursorVisible(false);
 
@@ -35,50 +34,13 @@ public class Main {
         List<FallingObjects> obstacleTreeList = new ArrayList<>();
 
 //        Set walls. Terminal size fra 0,0 til 80,24
+        printWalls(walls, terminal);
 
-        for (int column = 0; column <=24; column++) {
-            terminal.setCursorPosition(20, column);
-            terminal.putCharacter(walls);
-        }
-
-        for (int column = 0; column <=24; column++) {
-            terminal.setCursorPosition(60, column);
-            terminal.putCharacter(walls);
-        }
-
-//        Set Game Name
-        String text = "CAR GAME";
-
-        char[] carGame = text.toCharArray();
-        for (int i = 0; i < carGame.length; i++) {
-            terminal.setCursorPosition(i+2, 2);
-            terminal.putCharacter(carGame[i]);
-        }
-
-        //        Set Quit Game
-        String textQuit = "Quit game = \"q\"";
-
-        char[] quitText = textQuit.toCharArray();
-        for (int i = 0; i < quitText.length; i++) {
-            terminal.setCursorPosition(i+2, 20);
-            terminal.putCharacter(quitText[i]);
-        }
-
-//        Points
-        String pointsText = "Points: ";
-
-        char[] charAti = pointsText.toCharArray();
-        for (int i = 0; i < charAti.length; i++) {
-            terminal.setCursorPosition(i+65, 2);
-            terminal.putCharacter(charAti[i]);
-        }
-        terminal.setCursorPosition(74,2);
-        terminal.putCharacter('0');
-        terminal.setCursorPosition(75,2);
-        terminal.putCharacter('0');
+//        Print text on right and left side
+        printSides(terminal);
 
 //        Place player
-        Player player = new Player(40,22,'☃');
+        Player player = new Player(40, 22, '☃');
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
         terminal.setForegroundColor(TextColor.ANSI.CYAN); //Fucker lidt op i farven
@@ -94,108 +56,51 @@ public class Main {
                 keyStroke = terminal.pollInput();
             } while (keyStroke == null);
 
-        KeyType type = keyStroke.getKeyType();
-        Character c = keyStroke.getCharacter();
-        System.out.println(type);
-        System.out.println(c);
+            KeyType type = keyStroke.getKeyType();
+            Character c = keyStroke.getCharacter();
+            System.out.println(type);
+            System.out.println(c);
 
-        switch (type){
-            case ArrowUp -> {
-                if (player.getY()!=0) {
-                    player.moveUp();
-                } break;
-            }
-            case ArrowDown -> {
-                if (player.getY()!=23) {
-                    player.moveDown();
-                } break;
-            }
-            case ArrowRight -> {
-                if (player.getX()!=59) {
-                    player.moveRight();
-                } break;
-            }
-            case ArrowLeft -> {
-                if (player.getX()!=21) {
-                    player.moveLeft();
-                } break;
-            }
-        }
-
-        terminal.setCursorPosition(player.getX(), player.getY());
-        terminal.putCharacter(player.getSymbol());
-        terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
-        terminal.putCharacter(' ');
-
-        terminal.flush();
-
-//        Add Points
-        double probabliity = ThreadLocalRandom.current().nextDouble();
-        if (probabliity <= 0.2) {
-            pointsList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, points, 1, 1));
-        }
-
-        for (FallingObjects fallingObjects : pointsList) {
-            fallingObjects.fall(); // altså y++
-        }
-
-        for (FallingObjects fallingObjects : pointsList){
-            terminal.setCursorPosition(fallingObjects.getX(),fallingObjects.getY());
-            terminal.putCharacter(fallingObjects.getSymbol());
-            terminal.setCursorPosition(fallingObjects.getPreviousX(),fallingObjects.getPreviousY());
-            terminal.putCharacter(' ');
-            terminal.setForegroundColor(TextColor.ANSI.YELLOW);
-        }
-
-//        Points skal forsvinde når player rør dem
-//            Ikke alle bliver talt med i points
-        for (FallingObjects fallingObjects : pointsList) {
-            if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
-                terminal.setCursorPosition(fallingObjects.getX(),fallingObjects.getY());
-                terminal.putCharacter(' ');
-                pointsTotal++;
-                terminal.setCursorPosition(74,2);
-                char p = (char)pointsTotal;
-                terminal.putCharacter(p);
-            }
-        }
-
-        System.out.println("Points: "+pointsTotal);
-
-        terminal.flush();
-
-
-//        Add Obstacles
-
-        if (probabliity <= 0.3) {
-            obstacleList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, obstacle, 3, 1));
-        }
-
-        for (FallingObjects fallingObjects : obstacleList) {
-            fallingObjects.fall(); // altså y++
-        }
-
-        for (FallingObjects fallingObjects : obstacleList){
-            terminal.setCursorPosition(fallingObjects.getX(),fallingObjects.getY());
-            terminal.putCharacter(fallingObjects.getSymbol());
-            terminal.setCursorPosition(fallingObjects.getPreviousX(),fallingObjects.getPreviousY());
-            terminal.putCharacter(' ');
-            terminal.setForegroundColor(TextColor.ANSI.GREEN);
-        }
-
-        for (FallingObjects fallingObjects : obstacleList) {
-            if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
-                continueReadingInput = false;
-                terminal.clearScreen();
-
-                String gameOver = "GAME OVER ";
-                char[] charAtj = gameOver.toCharArray();
-                for (int i = 0; i < charAtj.length; i++) {
-                    terminal.setCursorPosition(i+35, 15);
-                    terminal.putCharacter(charAtj[i]);
+            switch (type) {
+                case ArrowUp -> {
+                    if (player.getY() != 0) {
+                        player.moveUp();
+                    }
+                }
+                case ArrowDown -> {
+                    if (player.getY() != 23) {
+                        player.moveDown();
+                    }
+                }
+                case ArrowRight -> {
+                    if (player.getX() != 59) {
+                        player.moveRight();
+                    }
+                }
+                case ArrowLeft -> {
+                    if (player.getX() != 21) {
+                        player.moveLeft();
+                    }
                 }
             }
-        }
+
+            terminal.setCursorPosition(player.getX(), player.getY());
+            terminal.putCharacter(player.getSymbol());
+            terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
+            terminal.putCharacter(' ');
+
+            terminal.flush();
+
+//        Add falling points and obstacles
+
+            falls(terminal, points, pointsList, 0.2);
+            falls(terminal, obstacle, obstacleList,0.3);
+
+            ifHitsPoints(pointsList,terminal,player,pointsTotal);
+            ifHitsObstacle(obstacleList,terminal, player);
+
+//            Add quit
+
 
 //        add bus
 //        obstacleTreeList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, '\u2589', 3, 1));
@@ -207,16 +112,17 @@ public class Main {
 //                terminal.setForegroundColor(TextColor.ANSI.YELLOW);
 //            }
 
-        if (c == Character.valueOf('q')) {
-            continueReadingInput = false;
-            System.out.println("quit");
-            terminal.close();
-        }
+            if (c == Character.valueOf('q')) {
+                continueReadingInput = false;
+                System.out.println("quit");
+                terminal.close();
+            }
 
-        terminal.flush();
+            terminal.flush();
 
         }
     }
+
 //    public static boolean isPoint (Player player, Position points){
 //        return position.getX()==points.getX() && position.getY()==points.getY();
 //        pointsTotal++;
@@ -231,4 +137,103 @@ public class Main {
 //        System.out.println("\n\t\tBOMB went off and closed the program");
 //        break;
 //    }
+
+
+    public static void printWalls (char walls, Terminal terminal) throws IOException {
+        for (int column = 0; column <= 24; column++) {
+            terminal.setCursorPosition(20, column);
+            terminal.putCharacter(walls);
+        }
+
+        for (int column = 0; column <= 24; column++) {
+            terminal.setCursorPosition(60, column);
+            terminal.putCharacter(walls);
+        }
+    }
+
+    public static void printSides(Terminal terminal) throws IOException {
+
+        String text = "CAR GAME";
+
+        char[] carGame = text.toCharArray();
+        for (int i = 0; i < carGame.length; i++) {
+            terminal.setCursorPosition(i + 2, 2);
+            terminal.putCharacter(carGame[i]);
+        }
+
+        String textQuit = "Quit game = \"q\"";
+
+        char[] quitText = textQuit.toCharArray();
+        for (int i = 0; i < quitText.length; i++) {
+            terminal.setCursorPosition(i + 2, 20);
+            terminal.putCharacter(quitText[i]);
+        }
+
+        String pointsText = "Points: ";
+
+        char[] charAti = pointsText.toCharArray();
+        for (int i = 0; i < charAti.length; i++) {
+            terminal.setCursorPosition(i + 65, 2);
+            terminal.putCharacter(charAti[i]);
+        }
+        terminal.setCursorPosition(74, 2);
+        terminal.putCharacter('0');
+        terminal.setCursorPosition(75, 2);
+        terminal.putCharacter('0');
+    }
+
+    public static void falls(Terminal terminal, char symbol, List<FallingObjects> fallList, double probability) throws IOException {
+        double probabliity = ThreadLocalRandom.current().nextDouble();
+        if (probabliity <= probability) {
+            fallList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, symbol));
+        }
+
+        for (FallingObjects fallingObjects : fallList) {
+            fallingObjects.fall(); // altså y++
+
+            terminal.setCursorPosition(fallingObjects.getX(), fallingObjects.getY());
+            terminal.putCharacter(fallingObjects.getSymbol());
+
+            terminal.setCursorPosition(fallingObjects.getPreviousX(), fallingObjects.getPreviousY());
+            terminal.putCharacter(' ');
+
+            terminal.setForegroundColor(TextColor.ANSI.YELLOW);
+        }
+    }
+
+    public static void ifHitsPoints(List<FallingObjects> list, Terminal terminal, Player player, int pointsTotal) throws IOException {
+
+        for (FallingObjects fallingObjects : list) {
+
+            if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
+                pointsTotal++;
+                terminal.setCursorPosition(74, 2);
+                char p = (char) pointsTotal;
+                terminal.putCharacter('x');
+
+                System.out.println("Points: " + pointsTotal);
+
+            }
+        }
+        System.out.println("Points: " + pointsTotal);
+
+        terminal.flush();
+
+    }
+
+    public static void ifHitsObstacle(List<FallingObjects> list, Terminal terminal, Player player) throws IOException {
+
+        for (FallingObjects fallingObjects : list) {
+
+            if (fallingObjects.getX() == player.getX() && fallingObjects.getY() == player.getY()) {
+                terminal.clearScreen();
+                String gameOver = "GAME OVER ";
+                char[] charAtj = gameOver.toCharArray();
+                for (int i = 0; i < charAtj.length; i++) {
+                    terminal.setCursorPosition(i + 35, 15);
+                    terminal.putCharacter(charAtj[i]);
+                }
+            }
+        }
+    }
 }
