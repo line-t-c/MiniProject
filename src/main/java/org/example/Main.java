@@ -17,6 +17,7 @@ public class Main {
 
         DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
         Terminal terminal = terminalFactory.createTerminal();
+
 //        Så kan man ikke se pilen
         terminal.setCursorVisible(false);
 
@@ -24,14 +25,12 @@ public class Main {
         Random r = new Random();
 
         final char obstacle = '☢';
-//        final char points = '☆';
+        final char walls = '\u2590';
         final char points = '\u26ab';
         int pointsTotal = 0;
-        final char walls = '\u2590';
 
         List<FallingObjects> pointsList = new ArrayList<>();
         List<FallingObjects> obstacleList = new ArrayList<>();
-        List<FallingObjects> obstacleTreeList = new ArrayList<>();
 
 //        Set walls. Terminal size fra 0,0 til 80,24
         printWalls(walls, terminal);
@@ -39,13 +38,15 @@ public class Main {
 //        Print text on right and left side
         printSides(terminal);
 
-//        Place player
+//        Place player before start
         Player player = new Player(40, 22, '☃');
         terminal.setCursorPosition(player.getX(), player.getY());
         terminal.putCharacter(player.getSymbol());
         terminal.setForegroundColor(TextColor.ANSI.CYAN); //Fucker lidt op i farven
 
         terminal.flush();
+
+//        Set up at den bliver ved at loope
 
         boolean continueReadingInput = true;
 
@@ -58,8 +59,12 @@ public class Main {
 
             KeyType type = keyStroke.getKeyType();
             Character c = keyStroke.getCharacter();
+
+//            Printe i consollen
             System.out.println(type);
             System.out.println(c);
+
+//            Sætte op, hvad der sker, når man trykker på tasterne, så den ikke kan rykke ind i væggen og top/bund
 
             switch (type) {
                 case ArrowUp -> {
@@ -84,6 +89,7 @@ public class Main {
                 }
             }
 
+//            Sætte at player rykker sig, men ikke har en hale efter sig
             terminal.setCursorPosition(player.getX(), player.getY());
             terminal.putCharacter(player.getSymbol());
             terminal.setCursorPosition(player.getPreviousX(), player.getGetPreviousY());
@@ -93,24 +99,17 @@ public class Main {
 
 //        Add falling points and obstacles
 
-            falls(terminal, points, pointsList, 0.2);
-            falls(terminal, obstacle, obstacleList,0.3);
+            falls(terminal, points, pointsList, 0.2, TextColor.ANSI.YELLOW);
+            falls(terminal, obstacle, obstacleList,0.3, TextColor.ANSI.GREEN);
+
+            terminal.flush();
 
             ifHitsPoints(pointsList,terminal,player,pointsTotal);
             ifHitsObstacle(obstacleList,terminal, player);
 
+            terminal.flush();
+
 //            Add quit
-
-
-//        add bus
-//        obstacleTreeList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, '\u2589', 3, 1));
-//
-//        for (int i = 0; i < 4; i++) {
-//            for (int j = 0; j < 3; j++) {
-//                terminal.setCursorPosition();
-//                terminal.putCharacter('\u2589');
-//                terminal.setForegroundColor(TextColor.ANSI.YELLOW);
-//            }
 
             if (c == Character.valueOf('q')) {
                 continueReadingInput = false;
@@ -122,21 +121,6 @@ public class Main {
 
         }
     }
-
-//    public static boolean isPoint (Player player, Position points){
-//        return position.getX()==points.getX() && position.getY()==points.getY();
-//        pointsTotal++;
-//    }
-
-//    public static boolean isObstacle (List<FallingObjects> fallingObjectsList, Player player){
-//        return player.getX()==fallingObjectsList.getX && player.getY()==fallingObjectsList.getY();
-//    }
-
-//    if (isObstacle(new Position(x,y),bombPosition)){
-//        terminal.close();
-//        System.out.println("\n\t\tBOMB went off and closed the program");
-//        break;
-//    }
 
 
     public static void printWalls (char walls, Terminal terminal) throws IOException {
@@ -182,7 +166,7 @@ public class Main {
         terminal.putCharacter('0');
     }
 
-    public static void falls(Terminal terminal, char symbol, List<FallingObjects> fallList, double probability) throws IOException {
+    public static void falls(Terminal terminal, char symbol, List<FallingObjects> fallList, double probability, TextColor.ANSI color) throws IOException {
         double probabliity = ThreadLocalRandom.current().nextDouble();
         if (probabliity <= probability) {
             fallList.add(new FallingObjects(ThreadLocalRandom.current().nextInt(39) + 21, 0, symbol));
@@ -197,7 +181,7 @@ public class Main {
             terminal.setCursorPosition(fallingObjects.getPreviousX(), fallingObjects.getPreviousY());
             terminal.putCharacter(' ');
 
-            terminal.setForegroundColor(TextColor.ANSI.YELLOW);
+            terminal.setForegroundColor(color);
         }
     }
 

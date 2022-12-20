@@ -2,12 +2,10 @@ package org.example;
 
 public class FallingObjects extends GameObject {
 
-    int lenght;
-    int hight;
-
     public FallingObjects (int x, int y, char symbol) {
         super(x, y, symbol);
         super.previousX = x;
+        super.previousY = y;
     }
 
     public int getX() {
